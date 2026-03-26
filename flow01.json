@@ -1,0 +1,48 @@
+[
+  {
+    "id": "tab1",
+    "type": "tab",
+    "label": "Meteo flow",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "inject1",
+    "type": "inject",
+    "z": "tab1",
+    "name": "Trigger každých 10s",
+    "props": [],
+    "repeat": "10",
+    "crontab": "",
+    "once": true,
+    "onceDelay": 0.1,
+    "topic": "",
+    "x": 150,
+    "y": 100,
+    "wires": [["http1"]]
+  },
+  {
+    "id": "http1",
+    "type": "http request",
+    "z": "tab1",
+    "name": "Get meteo data",
+    "method": "GET",
+    "ret": "obj",
+    "url": "http://89.221.223.46:8080/weather_api?station=11791",
+    "x": 360,
+    "y": 100,
+    "wires": [["function1"]]
+  },
+  {
+    "id": "function1",
+    "type": "function",
+    "z": "tab1",
+    "name": "Rozdělení veličin",
+    "outputs": 5,
+    "noerr": 0,
+    "func": "let data = msg.payload;\n\nlet station = data.station;\nlet time = data.Time_UTC;\n\nreturn [\n    { payload: { st_id: station, time: time, type: \"T\", value: data.T } },\n    { payload: { st_id: station, time: time, type: \"H\", value: data.H } },\n    { payload: { st_id: station, time: time, type: \"P\", value: data.P } },\n    { payload: { st_id: station, time: time, type: \"F\", value: data.F } },\n    { payload: { st_id: station, time: time, type: \"D\", value: data.D } }\n];",
+    "x": 610,
+    "y": 100,
+    "wires": [[], [], [], [], []]
+  }
+]
